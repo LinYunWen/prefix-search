@@ -37,6 +37,7 @@ static void rmcrlf(char *s)
 int main(int argc, char **argv)
 {
     char word[WRDMAX] = "";
+    char word_saver[10000][WRDMAX];
     char *sgl[LMAX] = {NULL};
     tst_node *root = NULL, *res = NULL;
     int rtn = 0, idx = 0, sidx = 0;
@@ -49,15 +50,17 @@ int main(int argc, char **argv)
     }
 
     t1 = tvgetf();
-    while ((rtn = fscanf(fp, "%s", word)) != EOF) {
-        char *p = word;
-        /* FIXME: insert reference to each string */
-        if (!tst_ins_del(&root, &p, INS, CPY)) {
+    while ((rtn = fscanf(fp, "%s", word_saver[idx])) != EOF) {
+        char *p = word_saver[idx];
+        if (!tst_ins_del(&root, &p, INS, REF)) {
             fprintf(stderr, "error: memory exhausted, tst_insert.\n");
             fclose(fp);
             return 1;
         }
         idx++;
+        if (idx >= 10000) {
+            break;
+        }
     }
     t2 = tvgetf();
 
@@ -75,6 +78,7 @@ int main(int argc, char **argv)
             " q  quit, freeing all data\n\n"
             "choice: ");
         fgets(word, sizeof word, stdin);
+        // strcpy(word, "s"); // for comparsion
         p = NULL;
         switch (*word) {
         case 'a':
@@ -86,8 +90,7 @@ int main(int argc, char **argv)
             rmcrlf(word);
             p = word;
             t1 = tvgetf();
-            /* FIXME: insert reference to each string */
-            res = tst_ins_del(&root, &p, INS, CPY);
+            res = tst_ins_del(&root, &p, INS, REF);
             t2 = tvgetf();
             if (res) {
                 idx++;
@@ -117,6 +120,7 @@ int main(int argc, char **argv)
                 fprintf(stderr, "error: insufficient input.\n");
                 break;
             }
+            // strcpy(word, "Man"); // for comparsion
             rmcrlf(word);
             t1 = tvgetf();
             res = tst_search_prefix(root, word, sgl, &sidx, LMAX);
@@ -138,8 +142,7 @@ int main(int argc, char **argv)
             p = word;
             printf("  deleting %s\n", word);
             t1 = tvgetf();
-            /* FIXME: remove reference to each string */
-            res = tst_ins_del(&root, &p, DEL, CPY);
+            res = tst_ins_del(&root, &p, DEL, REF);
             t2 = tvgetf();
             if (res)
                 printf("  delete failed.\n");

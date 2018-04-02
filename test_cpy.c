@@ -57,6 +57,10 @@ int main(int argc, char **argv)
             return 1;
         }
         idx++;
+        // for comparsion
+        // if (idx >= 10000) {
+        //     break;
+        // }
     }
     t2 = tvgetf();
 
@@ -74,6 +78,7 @@ int main(int argc, char **argv)
             " q  quit, freeing all data\n\n"
             "choice: ");
         fgets(word, sizeof word, stdin);
+        // strcpy(word, "s"); // for comparsion
         p = NULL;
         switch (*word) {
         case 'a':
@@ -115,6 +120,7 @@ int main(int argc, char **argv)
                 fprintf(stderr, "error: insufficient input.\n");
                 break;
             }
+            // strcpy(word, "Man"); // for comparsion
             rmcrlf(word);
             t1 = tvgetf();
             res = tst_search_prefix(root, word, sgl, &sidx, LMAX);
