@@ -37,6 +37,14 @@ test_%: test_%.o $(OBJS_LIB)
 	$(VECHO) "  LD\t$@\n"
 	$(Q)$(CC) $(LDFLAGS) -o $@ $^
 
+bench: $(TESTS)
+	perf stat --repeat 100 \
+		-e cache-misses,cache-references,instructions,cycles \
+		./test_cpy --bench s Man
+	perf stat --repeat 100 \
+		-e cache-misses,cache-references,instructions,cycles \
+		./test_ref --bench s Man
+
 %.o: %.c
 	$(VECHO) "  CC\t$@\n"
 	$(Q)$(CC) -o $@ $(CFLAGS) -c -MMD -MF .$@.d $<
